@@ -23,15 +23,27 @@
             <li class="nav-item">
                 <a class="nav-link" href="{{url_for('home')}}">Home</a>
             </li>
+            {% if 'id' not in session %}
             <li class="nav-item">
               <a class="nav-link" href="{{url_for('signin')}}">Sign In</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{{url_for('register')}}">Register</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="profile.html">Profile</a>
-            </li>
+            {% endif %}
+          {% if 'id' in session %}<!-- if a session is there -->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Profile <i class="fas fa-caret-down"></i>
+              </a>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                  <a class="dropdown-item" href="{{url_for('profile',id=session['id'])}}">View Profile</a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="{{url_for('signout')}}">Signout</a>
+              </div>
+          </li>
+          {% endif %}
           </ul>
         </div>
       </nav>
