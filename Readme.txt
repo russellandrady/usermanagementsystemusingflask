@@ -1,0 +1,1 @@
+This is a very simple system for just insert the 3 subject marks to a database. And it calculate the average. Users can register and sign in. Technologies: Flask(A python framework for backend) with HTML, CSS and bootstrap framework(A web frontend framework).
