@@ -16,12 +16,24 @@
             <label for="password">Password</label>
             <input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
           </div>
-          <button type="submit" class="btn bg-dark text-white">Sign In</button>
-          {% if error %}
-            <div class="form-group mt-3 text-center">
-                <label for="error" style="color: red;">{{error}}</label>
+          <div class="row mt-3">
+            <!-- Left column for Sign In button -->
+            <div class="col-md-auto">
+              <button type="submit" class="btn bg-dark text-white">Sign In</button>
             </div>
-          {% endif %}
+            <!-- Right column for error message -->
+            <div class="col-md-auto offset-md-4">
+              {% if error %}
+                <div class="form-group text-right">
+                  <label for="error" class="text-danger">{{ error }}</label>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+          
+          
+          </div>
+          
         </form>
       </div>
     </div>
