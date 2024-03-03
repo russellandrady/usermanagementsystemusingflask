@@ -7,7 +7,7 @@
         Details and Marks
       </div>
       <div class="card-body">
-        <form method="post" action="/edit">
+        <form method="post" class="border p-4" action="/edit" style="background-color: rgba(251, 251, 190, 0.529);">
             <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" class="form-control" id="username" name="username" placeholder="Username" value="{{session['username']}}">
@@ -18,15 +18,15 @@
           </div>
           <div class="form-group">
             <label for="sub1">Subject 1</label>
-            <input type="text" class="form-control" id="sub1" name="sub1" placeholder="Subject 1" value="{% if 'sub1' in session %}{{ session['sub1'] }}{% endif %}">
+            <input type="text" class="form-control" id="sub1" name="sub1" placeholder="Subject 1" value="{% if session['sub1'] is not none %}{{ session['sub1'] }}{% endif %}">
           </div>
           <div class="form-group">
             <label for="password">Subject 2</label>
-            <input type="text" class="form-control" id="sub2" name="sub2" placeholder="Subject 2" value="{% if 'sub2' in session %}{{ session['sub2'] }}{% endif %}">
+            <input type="text" class="form-control" id="sub2" name="sub2" placeholder="Subject 2" value="{% if session['sub2'] is not none %}{{ session['sub2'] }}{% endif %}">
           </div>
           <div class="form-group">
             <label for="password">Subject 3</label>
-            <input type="text" class="form-control" id="sub3" name="sub3" placeholder="Subject 3" value="{% if 'sub3' in session %}{{ session['sub3'] }}{% endif %}">
+            <input type="text" class="form-control" id="sub3" name="sub3" placeholder="Subject 3" value="{% if session['sub3'] is not none %}{{ session['sub3'] }}{% endif %}">
           </div>
           <button type="submit" class="btn bg-dark text-white">Edit / Update</button>
 
