@@ -1,0 +1,22 @@
+body {
+    background-image: url('backgr.jpg'); /* Path to your background image */
+    background-size: cover; /* Cover the entire background */
+    background-position: center; /* Center the background image */
+    background-attachment: fixed; /* Ensure the background stays fixed while scrolling */
+    padding-bottom: 150px;
+  }
+footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+  }
+  .navbar-toggler-icon {
+    color: white;
+  }
+  .custom-container {
+    border: 5px solid #000000; /* Border color */
+    border-radius: 10px; /* Rounded corners */
+    padding: 20px; /* Add some padding for spacing */
+    background-color: white;
+  }
