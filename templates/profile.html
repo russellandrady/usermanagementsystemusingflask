@@ -46,7 +46,7 @@
           </tr>
         </thead>
         <tbody id="vacancyTableBody" class="table-dark text-center">
-          <!-- Placeholder rows for job vacancies -->
+          <!-- Placeholder rows for subject marks -->
           <tr>
             <td style="width: 150px;">{% if 'sub1' in session %}{{ session['sub1'] }}{% endif %}</td>
             <td style="width: 150px;">{% if 'sub2' in session %}{{ session['sub2'] }}{% endif %}</td>
@@ -58,20 +58,28 @@
     </div>
   </div>
   <div class="row justify-content-center mt-5">
-    <!-- Table to display job vacancies -->
+    <!-- Table to display average -->
     <div class="col-md-8">
       <table class="table table-bordered">
         <thead class="table-light text-center">
           <tr>
             <th scope="col" style="width: 100px;">Average: 
-                {% if 'sub1' in session and 'sub2' in session and 'sub3' in session %}
-                  {% set sub1_int = session['sub1'] | int %}
-                  {% set sub2_int = session['sub2'] | int %}
-                  {% set sub3_int = session['sub3'] | int %}
-                  {% set total = sub1_int + sub2_int + sub3_int %}
-                  {% set average = total / 3 %}
-                  {{ average }}
-                {% endif %}
+                  {{ session['average'] }}
+              </th>
+              
+          </tr>
+        </thead>
+      </table>
+    </div>
+  </div>
+  <div class="row justify-content-center mt-5">
+    <!-- Table to display average -->
+    <div class="col-md-8">
+      <table class="table table-bordered">
+        <thead class="table-light text-center">
+          <tr>
+            <th scope="col" style="width: 100px;">Gpa: 
+                  {{ session['gpa'] }}
               </th>
               
           </tr>

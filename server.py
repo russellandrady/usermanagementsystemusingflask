@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb  import MySQL
+import numpy as np
 
 app=Flask(__name__)
 app.secret_key = 'your-secret-key'
@@ -51,6 +52,16 @@ def register():
 
 @app.route('/profile/<int:id>')
 def profile(id):
+    if 'sub1' in session and 'sub2' in session and 'sub3' in session:
+        sub1_int = int(session.get('sub1', 0))
+        sub2_int = int(session.get('sub2', 0))
+        sub3_int = int(session.get('sub3', 0))
+        marks_array = np.array([sub1_int, sub2_int, sub3_int])
+        average = np.mean(marks_array)
+        total = sub1_int+sub2_int+sub3_int
+        session['average']=average
+        gpa = np.interp(total, [0, 300], [0, 4])
+        session['gpa'] = gpa
     return render_template('profile.html')
 
 @app.route('/edit', methods=['GET', 'POST'])
