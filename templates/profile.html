@@ -35,6 +35,26 @@
     </div>
   </div>
   <div class="row justify-content-center mt-5">
+    <div class="col-md-8">
+      <form action="/upload_cv" method="post" enctype="multipart/form-data" class="form-group">
+        <div class="text-center">
+          <input class="form-control bg-white " type="submit" disabled value="CV">
+          <input class="form-control" type="file" name="cv" id="cv" >
+        </div>
+        <button class="form-control bg-dark text-white" type="submit">Upload CV</button>
+        {% if nofile %}
+            <div class="form-group mt-3 text-center">
+                <label for="error" style="color: rgb(17, 145, 17);">Please select a file first</label>
+            </div>
+          {% endif %}
+    </form>
+    </div>
+    <div class="col-md-8 text-center">
+      <a href="{{ url_for('download_cv', filename=session['cvname'])  }}" class="link-success">{% if 'cvname' in session%}{{session['cvname']}}{% endif %}</a>
+    </div>
+    
+  </div>
+  <div class="row justify-content-center mt-5">
     <!-- Table to display job vacancies -->
     <div class="col-md-8">
       <table class="table table-bordered">

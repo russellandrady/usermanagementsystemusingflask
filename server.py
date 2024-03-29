@@ -1,6 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, flash, render_template, request, redirect, url_for, session, send_from_directory
 from flask_mysqldb  import MySQL
 import numpy as np
+import os
+from werkzeug.utils import secure_filename
 
 app=Flask(__name__)
 app.secret_key = 'your-secret-key'
@@ -10,6 +12,12 @@ app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD']=''
 app.config['MYSQL_DB'] = 'amccdb'
+
+#folder configurations
+UPLOAD_FOLDER = 'uploads'
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 mysql = MySQL(app)
 @app.route('/')
@@ -21,7 +29,7 @@ def signin():
         email=request.form['email']
         pwd=request.form['password']
         cur = mysql.connection.cursor()
-        cur.execute(f"SELECT username,email,password,id,sub1,sub2,sub3 FROM student WHERE email='{email}'")#find where is the email
+        cur.execute(f"SELECT username,email,password,id,sub1,sub2,sub3,cv_path FROM student WHERE email='{email}'")#find where is the email
         user = cur.fetchone()
         cur.close()
         if user and pwd ==user[2]:
@@ -31,6 +39,8 @@ def signin():
             session['sub1']=user[4]
             session['sub2']=user[5]
             session['sub3']=user[6]
+            if user[7] is not None:
+                session['cvname']=os.path.basename(user[7])
             return redirect(url_for('profile',id=session['id']))
         else:
             return render_template('signin.html', error='invalid data')
@@ -52,15 +62,14 @@ def register():
 
 @app.route('/profile/<int:id>')
 def profile(id):
-    if 'sub1' in session and 'sub2' in session and 'sub3' in session:
+    if session.get('sub1') is not None and session.get('sub2') is not None and session.get('sub3') is not None:
         sub1_int = int(session.get('sub1', 0))
         sub2_int = int(session.get('sub2', 0))
         sub3_int = int(session.get('sub3', 0))
         marks_array = np.array([sub1_int, sub2_int, sub3_int])
-        average = np.mean(marks_array)
-        total = sub1_int+sub2_int+sub3_int
+        average = round(np.mean(marks_array),2)
+        gpa = round(np.interp(average, [0, 100], [0, 4]),2)
         session['average']=average
-        gpa = np.interp(total, [0, 300], [0, 4])
         session['gpa'] = gpa
     return render_template('profile.html')
 
@@ -87,7 +96,45 @@ def edit():
         session['email']=email
         return redirect(url_for('profile',id=id))
     return render_template('profile.html', success=success)
+@app.route('/upload_cv', methods=['POST'])
+def upload_cv():
+    if 'cv' not in request.files:
+        #flash('No file part')
+        return redirect(request.url)
+    
+    cv_file = request.files['cv']
+    
+    if cv_file.filename == '':
+        #flash('No selected file')
+        #session['nofile']=True
+        return render_template('profile.html', nofile=True)
+     # Delete the old CV file if it exists
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT cv_path FROM student WHERE id = %s", (session['id'],))
+    old_cv_path = cur.fetchone()
+    if old_cv_path is not None:
+        try:
+            os.remove(old_cv_path[0])  # Delete the file
+        except (FileNotFoundError, TypeError):
+            pass  # File not found or invalid path, nothing to delete
 
+    if cv_file:
+        cv_filename = secure_filename(cv_file.filename)
+        cv_filename = secure_filename(str(session['username']) + '_' + cv_file.filename)
+        
+        # Update the database with the file path for the current user
+        cv_path = os.path.join(app.config['UPLOAD_FOLDER'], cv_filename)
+        cur = mysql.connection.cursor()
+        cur.execute("UPDATE student SET cv_path = %s WHERE id = %s", (cv_path, session['id']))
+        mysql.connection.commit()
+        cur.close()
+        session['cvname']=cv_filename
+        #flash('CV uploaded successfully')
+        return redirect(url_for('profile',id=session['id']))
+@app.route('/download_cv/<filename>', methods=['GET'])
+def download_cv(filename):
+    cv_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
 
 @app.route('/signout')
 def signout():
