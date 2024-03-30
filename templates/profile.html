@@ -38,7 +38,7 @@
     <div class="col-md-8">
       <form action="/upload_cv" method="post" enctype="multipart/form-data" class="form-group">
         <div class="text-center">
-          <input class="form-control bg-white " type="submit" disabled value="CV">
+          <input class="form-control bg-white " type="submit" disabled value="CV(PDF)">
           <input class="form-control" type="file" name="cv" id="cv" >
         </div>
         <button class="form-control bg-dark text-white" type="submit">Upload CV</button>
@@ -50,7 +50,16 @@
     </form>
     </div>
     <div class="col-md-8 text-center">
-      <a href="{{ url_for('download_cv', filename=session['cvname'])  }}" class="link-success">{% if 'cvname' in session%}{{session['cvname']}}{% endif %}</a>
+      <a {% if 'cvname' in session %}href="{{ url_for('download_cv', filename=session['cvname']) }}"{% else %}href="#" onclick="return false;"{% endif %} class="form-control bg-white link-success">
+        {% if 'cvname' in session %}
+            Selected CV: {{ session['cvname'] }}
+        {% else %}
+            No CV selected
+        {% endif %}
+    </a>
+    
+    
+    
     </div>
     
   </div>

@@ -119,16 +119,21 @@ def upload_cv():
             pass  # File not found or invalid path, nothing to delete
 
     if cv_file:
-        cv_filename = secure_filename(cv_file.filename)
-        cv_filename = secure_filename(str(session['username']) + '_' + cv_file.filename)
+        # Generate a unique filename using the user ID
+        user_name = session['username']
+        original_filename = secure_filename(cv_file.filename)
+        _, file_extension = os.path.splitext(original_filename)
+        new_filename = f"user_{user_name}_{original_filename}"
+        
+        # Save the file with the new filename
+        cv_file.save(os.path.join(app.config['UPLOAD_FOLDER'], new_filename))
         
         # Update the database with the file path for the current user
-        cv_path = os.path.join(app.config['UPLOAD_FOLDER'], cv_filename)
-        cur = mysql.connection.cursor()
+        cv_path = os.path.join(app.config['UPLOAD_FOLDER'], new_filename)
         cur.execute("UPDATE student SET cv_path = %s WHERE id = %s", (cv_path, session['id']))
         mysql.connection.commit()
         cur.close()
-        session['cvname']=cv_filename
+        session['cvname']=new_filename
         #flash('CV uploaded successfully')
         return redirect(url_for('profile',id=session['id']))
 @app.route('/download_cv/<filename>', methods=['GET'])
