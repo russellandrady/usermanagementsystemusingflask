@@ -54,7 +54,11 @@ def register():
         email = request.form['email']
         pwd = request.form['password']
         cur = mysql.connection.cursor()
-        cur.execute("insert into student (username, email, password) VALUES (%s, %s, %s)", (username, email, pwd))
+        role = request.form['role']
+        if role == 'Student':
+            cur.execute("insert into student (username, email, password) VALUES (%s, %s, %s)", (username, email, pwd))
+        else:
+            cur.execute("insert into company (username, email, password) VALUES (%s, %s, %s)", (username, email, pwd))
         mysql.connection.commit()
         cur.close()
         reg=True
