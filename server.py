@@ -2,6 +2,7 @@ from flask import Flask, flash, render_template, request, redirect, url_for, ses
 from flask_mysqldb  import MySQL
 import numpy as np
 import os
+from flask import jsonify
 from werkzeug.utils import secure_filename
 
 app=Flask(__name__)
@@ -39,7 +40,6 @@ def signin():
             cur.execute(f"SELECT username, email, password, id FROM company WHERE email='{email}'")
 
         user = cur.fetchone()
-        cur.close()
 
         if user and pwd == user[2]:  # Check if the user exists and password matches
             session['username'] = user[0]
@@ -57,8 +57,13 @@ def signin():
             
             # Redirect to the appropriate profile page based on role
             if role == 'Student':
+                cur.close()
                 return redirect(url_for('profile', id=session['id']))
             elif role == 'Company':
+                cur.execute("SELECT title, description FROM job WHERE user_id = %s", (session['id'],))
+                jobs = cur.fetchall()
+                session['jobs'] = jobs
+                cur.close()
                 return redirect(url_for('comprofile', id=session['id']))
         else:
             return render_template('signin.html', error='Invalid data')
@@ -183,6 +188,26 @@ def upload_cv():
 def download_cv(filename):
     cv_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
+
+@app.route('/create_job', methods=['POST'])
+def create_job():
+    if request.method == 'POST':
+        job_title = request.form['job_title']
+        job_description = request.form['job_description']
+        
+        # Insert into job table
+        cur = mysql.connection.cursor()
+        cur.execute("INSERT INTO job (user_id, title, description) VALUES (%s, %s, %s)", (session['id'], job_title, job_description))
+        mysql.connection.commit()
+        
+        # Fetch the updated list of jobs
+        cur.execute("SELECT title, description FROM job WHERE user_id = %s", (session['id'],))
+        jobs = cur.fetchall()
+        session['jobs'] = jobs
+        cur.close()
+        
+        return redirect(url_for('comprofile',id=session['id']))
+    
 
 @app.route('/signout')
 def signout():
