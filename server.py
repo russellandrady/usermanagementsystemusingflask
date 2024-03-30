@@ -26,26 +26,45 @@ def home():
 @app.route('/signin', methods=['GET','POST'])
 def signin():
     if request.method == 'POST':
-        email=request.form['email']
-        pwd=request.form['password']
+        email = request.form['email']
+        pwd = request.form['password']
+        role = request.form['role']  # Assuming you have a select input for role
+
         cur = mysql.connection.cursor()
-        cur.execute(f"SELECT username,email,password,id,sub1,sub2,sub3,cv_path FROM student WHERE email='{email}'")#find where is the email
+
+        # Check if the user exists in either the student or company table based on role
+        if role == 'Student':
+            cur.execute(f"SELECT username, email, password, id, sub1, sub2, sub3, cv_path FROM student WHERE email='{email}'")
+        elif role == 'Company':
+            cur.execute(f"SELECT username, email, password, id FROM company WHERE email='{email}'")
+
         user = cur.fetchone()
         cur.close()
-        if user and pwd ==user[2]:
-            session['username']=user[0]
-            session['email']=user[1]
-            session['id']=user[3]
-            session['sub1']=user[4]
-            session['sub2']=user[5]
-            session['sub3']=user[6]
-            if user[7] is not None:
-                session['cvname']=os.path.basename(user[7])
-            return redirect(url_for('profile',id=session['id']))
+
+        if user and pwd == user[2]:  # Check if the user exists and password matches
+            session['username'] = user[0]
+            session['email'] = user[1]
+            session['id'] = user[3]
+            session['role'] = role
+            
+            # For students
+            if role == 'Student':
+                session['sub1'] = user[4]
+                session['sub2'] = user[5]
+                session['sub3'] = user[6]
+                if user[7] is not None:
+                    session['cvname'] = os.path.basename(user[7])
+            
+            # Redirect to the appropriate profile page based on role
+            if role == 'Student':
+                return redirect(url_for('profile', id=session['id']))
+            elif role == 'Company':
+                return redirect(url_for('comprofile', id=session['id']))
         else:
-            return render_template('signin.html', error='invalid data')
+            return render_template('signin.html', error='Invalid data')
     else:
         return render_template('signin.html')
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     reg=False
@@ -76,7 +95,9 @@ def profile(id):
         session['average']=average
         session['gpa'] = gpa
     return render_template('profile.html')
-
+@app.route('/comprofile/<int:id>')
+def comprofile(id):
+    return render_template('comprofile.html')
 @app.route('/edit', methods=['GET', 'POST'])
 def edit():
     success = False
@@ -100,6 +121,23 @@ def edit():
         session['email']=email
         return redirect(url_for('profile',id=id))
     return render_template('profile.html', success=success)
+@app.route('/compedit', methods=['GET', 'POST'])
+def compedit():
+    success = False
+    if request.method == 'POST':
+        id = session['id']
+        username = request.form['username']
+        email = request.form['email']
+        cur = mysql.connection.cursor()
+        cur.execute("UPDATE company SET username=%s, email=%s WHERE id=%s",
+                    (username, email, id))
+        mysql.connection.commit()
+        cur.close()
+        success = True
+        session['username']=username
+        session['email']=email
+        return redirect(url_for('comprofile',id=id))
+    return render_template('comprofile.html', success=success)
 @app.route('/upload_cv', methods=['POST'])
 def upload_cv():
     if 'cv' not in request.files:

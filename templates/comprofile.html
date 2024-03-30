@@ -1,0 +1,48 @@
+{% extends "index.html" %}
+{% block content %}
+  <!-- Main Content -->
+  <div class="container mt-5" style="max-width: 500px;">
+    <div class="card">
+      <div class="card-header text-center">
+        Details and Marks
+      </div>
+      <div class="card-body">
+        <form method="post" class="border p-4" action="/compedit" style="background-color: rgba(251, 251, 190, 0.529);">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" id="username" name="username" placeholder="Username" value="{{session['username']}}">
+              </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" value="{{session['email']}}">
+          </div>
+          <button type="submit" class="btn bg-dark text-white">Edit / Update</button>
+
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row justify-content-center mt-5">
+    <!-- Table to display job vacancies -->
+    <div class="col-md-8">
+      <table class="table table-bordered">
+        <thead class="table-light text-center">
+          <tr>
+            <th scope="col" style="width: 100px;">Internship Title</th>
+            <th scope="col" style="width: 200px;">Description</th>
+          </tr>
+        </thead>
+        <tbody id="vacancyTableBody" class="table-dark text-center">
+          <!-- Placeholder rows for subject marks -->
+          <tr>
+            <!-- <td style="width: 150px;">{% if 'sub1' in session %}{{ session['sub1'] }}{% endif %}</td>
+            <td style="width: 150px;">{% if 'sub2' in session %}{{ session['sub2'] }}{% endif %}</td>
+            <td style="width: 150px;">{% if 'sub3' in session %}{{ session['sub3'] }}{% endif %}</td> -->
+          </tr>
+          <!-- Add more rows as needed -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+{%  endblock %}"
