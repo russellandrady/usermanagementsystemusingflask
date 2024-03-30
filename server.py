@@ -121,9 +121,10 @@ def upload_cv():
     if cv_file:
         # Generate a unique filename using the user ID
         user_name = session['username']
+        user_id = session['id']
         original_filename = secure_filename(cv_file.filename)
         _, file_extension = os.path.splitext(original_filename)
-        new_filename = f"user_{user_name}_{original_filename}"
+        new_filename = f"user_{user_name}_{user_id}_{original_filename}"
         
         # Save the file with the new filename
         cv_file.save(os.path.join(app.config['UPLOAD_FOLDER'], new_filename))
