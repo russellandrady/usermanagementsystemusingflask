@@ -42,26 +42,46 @@
     <div class="col-md-8">
       <table class="table table-bordered">
         <thead class="table-light text-center">
-          <tr>
-            <th scope="col" style="width: 100px;">Internship Title</th>
-            <th scope="col" style="width: 200px;">Description</th>
-          </tr>
+            <tr>
+                <th scope="col" style="width: 100px;">Internship Title</th>
+                <th scope="col" style="width: 200px;">Description</th>
+                <th scope="col" style="width: 50px;">Edit</th>
+                <th scope="col" style="width: 50px;">Delete</th>
+            </tr>
         </thead>
         <tbody id="vacancyTableBody" class="table-dark text-center">
-          <!-- Placeholder rows for subject marks -->
-          <tr>
-            <td style="width: 150px;"></td>
-            <td style="width: 150px;"></td>
-          </tr>
-          {% for job in session['jobs'] %}
-                <tr>
-                    <td style="width: 150px;">{{ job[0] }}</td>
-                    <td style="width: 150px;">{{ job[1] }}</td>
-                </tr>
-          {% endfor %}
-          <!-- Add more rows as needed -->
+            {% for job in session['jobs'] %}
+            <tr>
+              <form action="{{ url_for('editjob', job_id=job[0]) }}" method="post">
+              <td style="width: 150px;">
+                <input class="bg-dark text-white" type="text" name="title_of" value="{{ job[1] }} ">
+              </td>
+              <td style="width: 300px;">
+                <textarea class="bg-dark text-white" name="description_of" style="width: 100%; resize: both;">{{ job[2] }}</textarea>
+              </td>
+                <td style="width: 100px;">
+                    <div class="d-flex justify-content-center">
+                        
+                            <button type="submit" name="editJob" class="btn btn-primary mx-1">
+                              <i class="fas fa-pencil-alt"></i>
+                            </button>
+                        
+                </td>
+              </form>
+                <td style="width: 100px;">
+                        
+                        <form action="{{ url_for('deletejob', job_id=job[0]) }}" method="post">
+                            <button type="submit" name="deleteJob" class="btn btn-danger mx-1">
+                              <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
         </tbody>
-      </table>
+    </table>
+    
     </div>
   </div>
 {%  endblock %}"

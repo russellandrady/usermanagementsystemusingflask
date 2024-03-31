@@ -60,7 +60,7 @@ def signin():
                 cur.close()
                 return redirect(url_for('profile', id=session['id']))
             elif role == 'Company':
-                cur.execute("SELECT title, description FROM job WHERE user_id = %s", (session['id'],))
+                cur.execute("SELECT id, title, description FROM job WHERE user_id = %s", (session['id'],))
                 jobs = cur.fetchall()
                 session['jobs'] = jobs
                 cur.close()
@@ -201,13 +201,38 @@ def create_job():
         mysql.connection.commit()
         
         # Fetch the updated list of jobs
-        cur.execute("SELECT title, description FROM job WHERE user_id = %s", (session['id'],))
+        cur.execute("SELECT id, title, description FROM job WHERE user_id = %s", (session['id'],))
         jobs = cur.fetchall()
         session['jobs'] = jobs
         cur.close()
         
         return redirect(url_for('comprofile',id=session['id']))
     
+@app.route('/deletejob/<int:job_id>', methods=['POST'])
+def deletejob(job_id):
+    cur = mysql.connection.cursor()
+    cur.execute("DELETE FROM job WHERE id = %s", (job_id,))
+    mysql.connection.commit()
+    cur.execute("SELECT id, title, description FROM job WHERE user_id = %s", (session['id'],))
+    jobs = cur.fetchall()
+    session['jobs'] = jobs
+    cur.close()
+
+    return redirect(url_for('comprofile',id=session['id']))
+@app.route('/editjob/<int:job_id>', methods=['POST'])
+def editjob(job_id):
+    description = request.form['description_of']
+    title = request.form['title_of']
+    cur = mysql.connection.cursor()
+    cur.execute("UPDATE job SET title=%s, description=%s WHERE id=%s", (title, description, job_id))
+    mysql.connection.commit()
+    cur.execute("SELECT id, title, description FROM job WHERE user_id = %s", (session['id'],))
+    jobs = cur.fetchall()
+    session['jobs'] = jobs
+    cur.close()
+    
+
+    return redirect(url_for('comprofile',id=session['id']))
 
 @app.route('/signout')
 def signout():
