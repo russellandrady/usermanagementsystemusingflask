@@ -189,6 +189,12 @@ def download_cv(filename):
     cv_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
 
+@app.route('/download_cv_by_company/<filename>', methods=['GET'])
+def download_cv_by_company(filename):
+    filename_extracted = os.path.basename(filename)
+    cv_path = os.path.join(app.config['UPLOAD_FOLDER'], filename_extracted)
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename_extracted, as_attachment=True)
+
 @app.route('/create_job', methods=['POST'])
 def create_job():
     if request.method == 'POST':
@@ -212,6 +218,7 @@ def create_job():
 def deletejob(job_id):
     cur = mysql.connection.cursor()
     cur.execute("DELETE FROM job WHERE id = %s", (job_id,))
+    cur.execute("DELETE FROM appliedjobs WHERE job_id = %s", (job_id,))
     mysql.connection.commit()
     cur.execute("SELECT id, title, description FROM job WHERE user_id = %s", (session['id'],))
     jobs = cur.fetchall()
@@ -238,15 +245,41 @@ def editjob(job_id):
 def internships():
     cur = mysql.connection.cursor()
     cur.execute("""
-    SELECT job.id, job.title, job.description, company.email
+    SELECT job.id, job.title, job.description, company.email, company.id,
+    IF(appliedjobs.student_id IS NOT NULL, 1, 0) AS applied
     FROM job
     INNER JOIN company ON job.user_id = company.id
-    """)
-
+    LEFT JOIN appliedjobs ON job.id = appliedjobs.job_id AND appliedjobs.student_id = %s
+    """, (session['id'],))
+#do we need commit here
     jobs = cur.fetchall()
-    session['jobs'] = jobs
+    session['jobs'] = jobs#remove this if dont want
+    mysql.connection.commit()
     cur.close()
     return render_template('internships.html',jobs=jobs)
+@app.route('/applyjobs/<int:job_id>/<int:student_id>/<int:company_id>', methods=['POST'])
+def applyjobs(job_id, student_id, company_id):
+    success = False
+    cur = mysql.connection.cursor()
+    cur.execute("INSERT INTO appliedjobs (job_id, student_id, company_id) VALUES (%s, %s, %s)",(job_id, student_id, company_id))
+    mysql.connection.commit()
+    cur.close()
+    success = True
+    return redirect(url_for('internships', success=success))
+@app.route('/requests/')
+def requests():
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT s.username, s.email, s.cv_path, j.title
+        FROM appliedjobs AS aj
+        INNER JOIN student AS s ON aj.student_id = s.id
+        INNER JOIN job AS j ON aj.job_id = j.id
+        WHERE aj.company_id = %s
+    """, (session['id'],))
+    reqs = cur.fetchall()
+    mysql.connection.commit()
+    cur.close()
+    return render_template('requests.html', reqs=reqs)
 
 @app.route('/signout')
 def signout():

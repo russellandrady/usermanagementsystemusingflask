@@ -41,6 +41,7 @@
               <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                 {% if session['role'] == 'Company' %}
                 <a class="dropdown-item" href="{{url_for('comprofile', id=session['id'])}}">View Profile</a>
+                <a class="dropdown-item" href="{{url_for('requests')}}">Requests</a>
                 {% else %}
                 <a class="dropdown-item" href="{{url_for('profile', id=session['id'])}}">View Profile</a>
                 <a class="dropdown-item" href="{{url_for('internships')}}">Internships</a>

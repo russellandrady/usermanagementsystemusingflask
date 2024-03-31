@@ -26,8 +26,8 @@
                 {{job[3]}}
               </td>
               <td style="width: 15px;" class="text-center">    
-                        <form action="{{ url_for('deletejob', job_id=job[0]) }}" method="post">
-                            <button type="submit" name="deleteJob" class="btn btn-danger mx-1">
+                        <form action="{{ url_for('applyjobs', job_id=job[0], student_id=session['id'], company_id=job[4]) }}" method="post">
+                          <button type="submit" name="applyJob" {% if job[5] %} disabled {% else %}{% endif %} class="btn mx-1 {% if job[5] %} btn-danger {% else %} btn-success {% endif %}">
                               <i class="fas fa-paper-plane"></i>
                             </button>
                         </form>

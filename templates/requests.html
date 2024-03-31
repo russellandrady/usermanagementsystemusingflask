@@ -1,0 +1,42 @@
+{% extends "index.html" %}
+{% block content %}
+
+  <div class="row justify-content-center mt-5">
+    <!-- Table to display job vacancies -->
+    <div class="col-md-11">
+      <table class="table table-bordered">
+        <thead class="table-light text-center">
+            <tr>
+                <th scope="col" style="width: 200px;">User</th>
+                <th scope="col" style="width: 200px;">Title</th>
+                <th scope="col" style="width: 200px;">Email</th>
+                <th scope="col" style="width: 15px;">CV</th>
+            </tr>
+        </thead>
+        <tbody id="vacancyTableBody" class="table-dark">
+            {% for req in reqs %}
+            <tr>
+              <td>
+                {{req[0]}}
+              </td>
+              <td>
+                {{ req[3] }}
+              </td>
+              <td>
+                <a href="{{req[1]}}">{{req[1]}}</a>
+              </td>
+              <td>
+                {% if req[2] %}
+                    <a href="{{ url_for('download_cv_by_company', filename=req[2]) }}" class="form-control bg-white link-success text-center">Download CV</a>
+                {% else %}
+                    <div class="text-center"><span class="text-muted">No CV provided</span></div>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    </div>
+  </div>
+{%  endblock %}"
