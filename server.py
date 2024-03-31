@@ -234,6 +234,20 @@ def editjob(job_id):
 
     return redirect(url_for('comprofile',id=session['id']))
 
+@app.route('/internships/')
+def internships():
+    cur = mysql.connection.cursor()
+    cur.execute("""
+    SELECT job.id, job.title, job.description, company.email
+    FROM job
+    INNER JOIN company ON job.user_id = company.id
+    """)
+
+    jobs = cur.fetchall()
+    session['jobs'] = jobs
+    cur.close()
+    return render_template('internships.html',jobs=jobs)
+
 @app.route('/signout')
 def signout():
     session.clear()

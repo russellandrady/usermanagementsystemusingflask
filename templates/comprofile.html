@@ -53,7 +53,7 @@
             {% for job in session['jobs'] %}
             <tr>
               <form action="{{ url_for('editjob', job_id=job[0]) }}" method="post">
-              <td style="padding-right: 0px;padding-left: 0px;">
+              <td style="padding-right: 0px;padding-left: 0px;" >
                 <input class="bg-dark text-white" type="text" name="title_of" style="width: 250px;" value="{{job[1]}}">
               </td>
               <td>
