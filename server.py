@@ -4,6 +4,8 @@ import numpy as np
 import os
 from flask import jsonify
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash
 
 app=Flask(__name__)
 app.secret_key = 'your-secret-key'
@@ -40,8 +42,7 @@ def signin():
             cur.execute(f"SELECT username, email, password, id FROM company WHERE email='{email}'")
 
         user = cur.fetchone()
-
-        if user and pwd == user[2]:  # Check if the user exists and password matches
+        if user and check_password_hash(user[2], pwd):  # Check if the user exists and password matches
             session['username'] = user[0]
             session['email'] = user[1]
             session['id'] = user[3]
@@ -77,12 +78,13 @@ def register():
         username = request.form['username']
         email = request.form['email']
         pwd = request.form['password']
+        hashed_pwd = generate_password_hash(pwd)
         cur = mysql.connection.cursor()
         role = request.form['role']
         if role == 'Student':
-            cur.execute("insert into student (username, email, password) VALUES (%s, %s, %s)", (username, email, pwd))
+            cur.execute("insert into student (username, email, password) VALUES (%s, %s, %s)", (username, email, hashed_pwd))
         else:
-            cur.execute("insert into company (username, email, password) VALUES (%s, %s, %s)", (username, email, pwd))
+            cur.execute("insert into company (username, email, password) VALUES (%s, %s, %s)", (username, email, hashed_pwd))
         mysql.connection.commit()
         cur.close()
         reg=True
