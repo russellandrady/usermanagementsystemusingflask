@@ -26,11 +26,11 @@
     <form method="post" class="border p-4" action="{{ url_for('create_job') }}" style="background-color: rgb(255, 255, 255);border-radius: 10px;">
         <div class="form-group">
             <label for="job_title">Internship Title</label>
-            <input type="text" class="form-control" id="job_title" name="job_title" placeholder="Internship Title">
+            <input type="text" class="form-control" id="job_title" name="job_title" placeholder="Internship Title" required>
           </div>
       <div class="form-group">
         <label for="email">Description</label>
-        <textarea class="form-control" id="job_description" name="job_description" placeholder="Job Description"></textarea>
+        <textarea class="form-control" id="job_description" name="job_description" placeholder="Job Description" required></textarea>
       </div>
       <button type="submit" class="btn bg-dark text-white">Add</button>
 
