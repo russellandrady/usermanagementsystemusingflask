@@ -1,9 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins');
 body {
     background-image: url('backgr.jpg'); /* Path to your background image */
-    background-size: cover; /* Cover the entire background */
+    background-size: contain; /* Cover the entire background */
     background-position: center; /* Center the background image */
     background-attachment: fixed; /* Ensure the background stays fixed while scrolling */
     padding-bottom: 150px;
+    font-family: 'Poppins', sans-serif;
   }
 footer {
     position: fixed;
@@ -19,4 +21,7 @@ footer {
     border-radius: 10px; /* Rounded corners */
     padding: 20px; /* Add some padding for spacing */
     background-color: white;
+  }
+  header{
+    width: 100vw;
   }
